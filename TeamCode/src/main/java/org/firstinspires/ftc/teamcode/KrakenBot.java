@@ -21,9 +21,14 @@ public class KrakenBot {
     public Servo left_claw;
     public Servo right_claw;
 
+    // Constants
     public static final double CLAW_HOME=0.2;
     public static final double INV_CLAW_HOME=0.8;
     public static final double WRIST_HOME=0.3;
+
+    public static final double MID_SERVO       =  0.5 ;
+    public static final double ARM_UP_POWER    =  0.45 ;
+    public static final double ARM_DOWN_POWER  = -0.45 ;
 
     // Local OpMode members
     HardwareMap hwMap = null;

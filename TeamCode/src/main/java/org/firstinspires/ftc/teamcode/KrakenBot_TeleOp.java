@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -47,12 +46,12 @@ public class KrakenBot_TeleOp extends OpMode {
 
         // Use gamepad buttons to move the arm up (Y) and down (A)
         if (gamepad1.y) {
-            robot.upper_arm.setPower(robot.ARM_UP_POWER);
+            robot.upper_arm.setPower(-2*robot.ARM_UP_POWER);
             robot.lower_arm.setPower(robot.ARM_UP_POWER);
         }
         else if (gamepad1.a) {
-            robot.upper_arm.setPower(robot.ARM_DOWN_POWER);
-            robot.lower_arm.setPower(robot.ARM_DOWN_POWER);
+            robot.upper_arm.setPower(2*robot.ARM_DOWN_POWER);
+            robot.lower_arm.setPower(-robot.ARM_DOWN_POWER);
         }
         else {
             robot.upper_arm.setPower(0.0);

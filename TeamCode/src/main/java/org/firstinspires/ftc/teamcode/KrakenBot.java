@@ -50,8 +50,8 @@ public class KrakenBot {
         // Set all motors to zero power
         left_drive.setPower(0);
         right_drive.setPower(0);
-        lower_arm.setPower(0);
-        upper_arm.setPower(0);
+        //lower_arm.setPower(0);
+        //upper_arm.setPower(0);
 
         // Set drive motors to run with encoders
         left_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

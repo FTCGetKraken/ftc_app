@@ -33,34 +33,34 @@ public class KrakenBot_TeleOp extends OpMode {
         robot.left_drive.setPower(left);
         robot.right_drive.setPower(right);
 
-        // Use gamepad left & right Bumpers to open and close the claw
-        if (gamepad1.right_bumper)
-            clawOffset += CLAW_SPEED;
-        else if (gamepad1.left_bumper)
-            clawOffset -= CLAW_SPEED;
+//        // Use gamepad left & right Bumpers to open and close the claw
+//        if (gamepad1.right_bumper)
+//            clawOffset += CLAW_SPEED;
+//        else if (gamepad1.left_bumper)
+//            clawOffset -= CLAW_SPEED;
 
-        // Move both servos to new position.  Assume servos are mirror image of each other.
-        clawOffset = Range.clip(clawOffset, -0.5, 0.5);
-        robot.left_claw.setPosition(robot.MID_SERVO + clawOffset);
-        robot.right_claw.setPosition(robot.MID_SERVO - clawOffset);
+//        // Move both servos to new position.  Assume servos are mirror image of each other.
+//        clawOffset = Range.clip(clawOffset, -0.5, 0.5);
+//        robot.left_claw.setPosition(robot.MID_SERVO + clawOffset);
+//        robot.right_claw.setPosition(robot.MID_SERVO - clawOffset);
 
-        // Use gamepad buttons to move the arm up (Y) and down (A)
-        if (gamepad1.y) {
-            robot.upper_arm.setPower(-2*robot.ARM_UP_POWER);
-            robot.lower_arm.setPower(robot.ARM_UP_POWER);
-        }
-        else if (gamepad1.a) {
-            robot.upper_arm.setPower(2*robot.ARM_DOWN_POWER);
-            robot.lower_arm.setPower(-robot.ARM_DOWN_POWER);
-        }
-        else {
-            robot.upper_arm.setPower(0.0);
-            robot.lower_arm.setPower(0.0);
-        }
-
-        // Send telemetry message to signify robot running;
-        telemetry.addData("claw",  "Offset = %.2f", clawOffset);
-        telemetry.addData("left",  "%.2f", left);
-        telemetry.addData("right", "%.2f", right);
+//        // Use gamepad buttons to move the arm up (Y) and down (A)
+//        if (gamepad1.y) {
+//            robot.upper_arm.setPower(-2*robot.ARM_UP_POWER);
+//            robot.lower_arm.setPower(robot.ARM_UP_POWER);
+//        }
+//        else if (gamepad1.a) {
+//            robot.upper_arm.setPower(2*robot.ARM_DOWN_POWER);
+//            robot.lower_arm.setPower(-robot.ARM_DOWN_POWER);
+//        }
+//        else {
+//            robot.upper_arm.setPower(0.0);
+//            robot.lower_arm.setPower(0.0);
+//        }
+//
+//        // Send telemetry message to signify robot running;
+//        telemetry.addData("claw",  "Offset = %.2f", clawOffset);
+//        telemetry.addData("left",  "%.2f", left);
+//        telemetry.addData("right", "%.2f", right);
     }
 }

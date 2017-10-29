@@ -58,11 +58,11 @@ public class KrakenBot {
         right_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Define and initialize ALL installed servos.
-        wrist = hwMap.get(Servo.class, "wrist");
-        left_claw = hwMap.get(Servo.class, "left_claw");
-        right_claw = hwMap.get(Servo.class, "right_claw");
-        wrist.setPosition(WRIST_HOME);
-        left_claw.setPosition(CLAW_HOME);
-        right_claw.setPosition(INV_CLAW_HOME);
+        //wrist = hwMap.get(Servo.class, "wrist");
+        //left_claw = hwMap.get(Servo.class, "left_claw");
+        //right_claw = hwMap.get(Servo.class, "right_claw");
+        //wrist.setPosition(WRIST_HOME);
+        //left_claw.setPosition(CLAW_HOME);
+        //right_claw.setPosition(INV_CLAW_HOME);
     }
 }

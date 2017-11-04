@@ -65,7 +65,7 @@ public class KrakenBot {
         upper_arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         lower_arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lower_arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        upper_arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Define and initialize ALL installed servos.
         left_claw = hwMap.get(Servo.class, "left_claw");

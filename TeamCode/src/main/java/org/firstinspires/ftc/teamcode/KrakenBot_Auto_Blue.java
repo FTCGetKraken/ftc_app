@@ -13,7 +13,7 @@ public class KrakenBot_Auto_Blue extends LinearOpMode {
     public ElapsedTime runtime = new ElapsedTime();
     
     public void runOpMode() {
-        robot = new KrakenBot(new Orientation(true,false));
+        robot = new KrakenBot(new KrakenOrientation(true,false));
         robot.init(hardwareMap);
         waitForStart();
         robot.autoWithJewels();

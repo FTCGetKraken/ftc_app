@@ -9,13 +9,13 @@ import com.qualcomm.robotcore.util.*;
  */
 @TeleOp(name="KrakenBot:TeleOp", group="final")
 public class KrakenBot_TeleOp extends LinearOpMode {
-    KrakenBot robot = new KrakenBot(new Orientation(true,true));
+    KrakenBot robot = new KrakenBot(new KrakenOrientation(true,true));
 
     double          clawOffset  = 0.0 ;                  // Servo mid position
     final double    CLAW_SPEED  = 0.05 ;                 // sets rate to move servo
     final double    MOTOR_REDUCTION = 5;
     boolean advanced_arm_mode = false;
-
+    double adj_reduction = 1;
     ElapsedTime e = new ElapsedTime();
 
     public void runOpMode() {
@@ -36,12 +36,12 @@ public class KrakenBot_TeleOp extends LinearOpMode {
             double upper_arm=0;
 
             // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-            left_drive_power = -gamepad1.left_stick_y-defaultLpower;
-            right_drive_power = -gamepad1.right_stick_y-defaultRpower;
+            left_drive_power = -(gamepad1.left_stick_y-defaultLpower)/adj_reduction;
+            right_drive_power = -(gamepad1.right_stick_y-defaultRpower)/adj_reduction;
 
             robot.left_drive.setPower(left_drive_power);
             robot.right_drive.setPower(right_drive_power);
-
+telemetry
             // Use gamepad left & right Bumpers to open and close the claw
             if (gamepad2.right_bumper) {
                 //robot.open_claw();
@@ -52,6 +52,18 @@ public class KrakenBot_TeleOp extends LinearOpMode {
                 //robot.close_claw();
                 robot.left_claw.setPosition(robot.left_claw.getPosition() - CLAW_SPEED);
                 robot.right_claw.setPosition(robot.right_claw.getPosition() + CLAW_SPEED);
+            }
+
+            if(gamepad1.left_bumper) {
+                adj_reduction -= 0.1;
+            } else if(gamepad1.right_bumper) {
+                adj_reduction += 0.1;
+            }
+            if(adj_reduction>=6) {
+                adj_reduction=6;
+            }
+            else if(adj_reduction<=1) {
+                adj_reduction=1;
             }
 
             if(gamepad2.a) {

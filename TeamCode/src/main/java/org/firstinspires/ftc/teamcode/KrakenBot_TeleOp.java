@@ -89,7 +89,7 @@ public class KrakenBot_TeleOp extends LinearOpMode {
                 lower_arm = gamepad2.left_stick_y;
                 upper_arm = gamepad2.right_stick_y;
             } else {
-                lower_arm=gamepad2.right_stick_y*4/MOTOR_REDUCTION;
+                lower_arm=-gamepad2.right_stick_y*4/MOTOR_REDUCTION;
 //                if (gamepad2.dpad_left) {
 //                    // Retract tentacle
 //                    lower_arm = -6/MOTOR_REDUCTION;
@@ -98,7 +98,7 @@ public class KrakenBot_TeleOp extends LinearOpMode {
 //                    // Extend tentacle
 //                    lower_arm = 4/MOTOR_REDUCTION;
 //                }
-                upper_arm=gamepad2.left_stick_y/MOTOR_REDUCTION;
+                upper_arm=-gamepad2.left_stick_y/MOTOR_REDUCTION;
 //                if(gamepad2.dpad_up) {
 //                    // Raise tentacle
 //                    upper_arm = 1/MOTOR_REDUCTION;

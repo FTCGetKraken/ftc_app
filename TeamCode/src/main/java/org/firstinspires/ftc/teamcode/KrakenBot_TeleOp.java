@@ -14,20 +14,30 @@ public class KrakenBot_TeleOp extends LinearOpMode {
     double          clawOffset  = 0.0 ;                  // Servo mid position
     final double    CLAW_SPEED  = 0.05 ;                 // sets rate to move servo
     final double    MOTOR_REDUCTION = 5;
+    final double    SQRT_2 = 1.41421356;
     boolean advanced_arm_mode = false;
     double adj_reduction = 1;
     ElapsedTime e = new ElapsedTime();
+
+    public int getSign(double x) {
+        return x<0?-1:1;
+    }
 
     public void runOpMode() {
         robot.init(hardwareMap);
         waitForStart();
         e.reset();
-        double defaultLpower = -gamepad1.left_stick_y;
-        double defaultRpower = -gamepad1.right_stick_y;
+        double defaultLpower = -gamepad1.left_stick_x;
+        double defaultRpower = -gamepad1.left_stick_y;
+
+        double defaultThrottle = -gamepad1.right_stick_y;
         //while(e.milliseconds()<1000&&opModeIsActive()) {}
         //robot.close_claw();
         while(opModeIsActive()) {
             // Drive Motors' Power
+            double raw_x;
+            double raw_y;
+            double pythagoras;
             double left_drive_power;
             double right_drive_power;
 
@@ -36,12 +46,23 @@ public class KrakenBot_TeleOp extends LinearOpMode {
             double upper_arm=0;
 
             // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-            left_drive_power = -(gamepad1.left_stick_y-defaultLpower)/adj_reduction;
-            right_drive_power = -(gamepad1.right_stick_y-defaultRpower)/adj_reduction;
+            raw_x = -(gamepad1.left_stick_x-defaultLpower);
+            raw_y = -(gamepad1.left_stick_y-defaultRpower);
+
+
+            left_drive_power=(raw_y-raw_x)*adj_reduction/(SQRT_2);
+            right_drive_power=(raw_x+raw_y)*adj_reduction/(SQRT_2);
+            double temp;
+
+            if(left_drive_power<0&&right_drive_power<0) {
+                temp=left_drive_power;
+                left_drive_power=right_drive_power;
+                right_drive_power=temp;
+            }
 
             robot.left_drive.setPower(left_drive_power);
             robot.right_drive.setPower(right_drive_power);
-telemetry
+
             // Use gamepad left & right Bumpers to open and close the claw
             if (gamepad2.right_bumper) {
                 //robot.open_claw();
@@ -54,17 +75,7 @@ telemetry
                 robot.right_claw.setPosition(robot.right_claw.getPosition() + CLAW_SPEED);
             }
 
-            if(gamepad1.left_bumper) {
-                adj_reduction -= 0.1;
-            } else if(gamepad1.right_bumper) {
-                adj_reduction += 0.1;
-            }
-            if(adj_reduction>=6) {
-                adj_reduction=6;
-            }
-            else if(adj_reduction<=1) {
-                adj_reduction=1;
-            }
+            adj_reduction=(gamepad1.right_stick_y-defaultThrottle+1)/2;
 
             if(gamepad2.a) {
                 robot.color_sensing_arm.setPosition(0);
@@ -78,23 +89,24 @@ telemetry
                 lower_arm = gamepad2.left_stick_y;
                 upper_arm = gamepad2.right_stick_y;
             } else {
-                if (gamepad2.dpad_left) {
-                    // Retract tentacle
-                    lower_arm = -6/MOTOR_REDUCTION;
-                    //upper_arm = -0.3333/MOTOR_REDUCTION;
-                } else if (gamepad2.dpad_right) {
-                    // Extend tentacle
-                    lower_arm = 4/MOTOR_REDUCTION;
-                    upper_arm = 0.6666/MOTOR_REDUCTION;
-                }
-                if(gamepad2.dpad_up) {
-                    // Raise tentacle
-                    upper_arm = 1/MOTOR_REDUCTION;
-
-                } else if(gamepad2.dpad_down) {
-                    // Lower tentacle
-                    upper_arm = -1/MOTOR_REDUCTION;
-                }
+                lower_arm=gamepad2.right_stick_y*4/MOTOR_REDUCTION;
+//                if (gamepad2.dpad_left) {
+//                    // Retract tentacle
+//                    lower_arm = -6/MOTOR_REDUCTION;
+//                    //upper_arm = -0.3333/MOTOR_REDUCTION;
+//                } else if (gamepad2.dpad_right) {
+//                    // Extend tentacle
+//                    lower_arm = 4/MOTOR_REDUCTION;
+//                }
+                upper_arm=gamepad2.left_stick_y/MOTOR_REDUCTION;
+//                if(gamepad2.dpad_up) {
+//                    // Raise tentacle
+//                    upper_arm = 1/MOTOR_REDUCTION;
+//
+//                } else if(gamepad2.dpad_down) {
+//                    // Lower tentacle
+//                    upper_arm = -1/MOTOR_REDUCTION;
+//                }
             }
 
             robot.lower_arm.setPower(lower_arm/MOTOR_REDUCTION);

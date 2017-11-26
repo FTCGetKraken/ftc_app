@@ -282,6 +282,11 @@ public class KrakenBot {
         while ((runtime.seconds() < timeoutS) &&
                 (this.left_drive.isBusy() || this.right_drive.isBusy())) {
             // Display it for the driver.
+            // Display it for the driver.
+            System.out.println("Path1: Running to"+newLeftTarget+"|"+newRightTarget);
+            System.out.println("Path2: Running at"+
+                    this.left_drive.getCurrentPosition()+"|"+
+                    this.right_drive.getCurrentPosition());
         }
 
         // Stop all motion;

@@ -15,16 +15,14 @@ public class KrakenBot_TeleOp extends LinearOpMode {
     final double    CLAW_SPEED  = 0.05 ;                 // sets rate to move servo
     final double    MOTOR_REDUCTION = 5;
     final double    SQRT_2 = 1.41421356;
-    boolean advanced_arm_mode = false;
     double adj_reduction = 1;
     ElapsedTime e = new ElapsedTime();
 
     public int getSign(double x) {
         return x<0?-1:1;
     }
-
     public void runOpMode() {
-        robot.init(hardwareMap);
+        robot.init(hardwareMap,true);
         waitForStart();
         e.reset();
         double defaultLpower = -gamepad1.left_stick_x;
@@ -37,7 +35,6 @@ public class KrakenBot_TeleOp extends LinearOpMode {
             // Drive Motors' Power
             double raw_x;
             double raw_y;
-            double pythagoras;
             double left_drive_power;
             double right_drive_power;
 
@@ -49,6 +46,7 @@ public class KrakenBot_TeleOp extends LinearOpMode {
             raw_x = -(gamepad1.left_stick_x-defaultLpower);
             raw_y = -(gamepad1.left_stick_y-defaultRpower);
 
+            adj_reduction=(gamepad1.right_stick_y-defaultThrottle+1)/2;
 
             left_drive_power=(raw_y-raw_x)*adj_reduction/(SQRT_2);
             right_drive_power=(raw_x+raw_y)*adj_reduction/(SQRT_2);
@@ -75,21 +73,11 @@ public class KrakenBot_TeleOp extends LinearOpMode {
                 robot.right_claw.setPosition(robot.right_claw.getPosition() + CLAW_SPEED);
             }
 
-            adj_reduction=(gamepad1.right_stick_y-defaultThrottle+1)/2;
 
             if(gamepad2.a) {
                 robot.color_sensing_arm.setPosition(0);
             }
-
-            if(gamepad2.back) {
-                advanced_arm_mode = !advanced_arm_mode;
-            }
-
-            if(advanced_arm_mode) {
-                lower_arm = gamepad2.left_stick_y;
-                upper_arm = gamepad2.right_stick_y;
-            } else {
-                lower_arm=-gamepad2.right_stick_y*4/MOTOR_REDUCTION;
+            lower_arm=-gamepad2.right_stick_y*4/MOTOR_REDUCTION;
 //                if (gamepad2.dpad_left) {
 //                    // Retract tentacle
 //                    lower_arm = -6/MOTOR_REDUCTION;
@@ -98,7 +86,7 @@ public class KrakenBot_TeleOp extends LinearOpMode {
 //                    // Extend tentacle
 //                    lower_arm = 4/MOTOR_REDUCTION;
 //                }
-                upper_arm=-gamepad2.left_stick_y/MOTOR_REDUCTION;
+            upper_arm=-gamepad2.left_stick_y/MOTOR_REDUCTION;
 //                if(gamepad2.dpad_up) {
 //                    // Raise tentacle
 //                    upper_arm = 1/MOTOR_REDUCTION;
@@ -107,7 +95,7 @@ public class KrakenBot_TeleOp extends LinearOpMode {
 //                    // Lower tentacle
 //                    upper_arm = -1/MOTOR_REDUCTION;
 //                }
-            }
+
 
             robot.lower_arm.setPower(lower_arm/MOTOR_REDUCTION);
             robot.upper_arm.setPower(upper_arm/MOTOR_REDUCTION);

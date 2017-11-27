@@ -32,22 +32,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class KrakenBot {
     // Drive Motors
-    public DcMotor left_drive;
-    public DcMotor right_drive;
+    public DcMotor left_drive=null;
+    public DcMotor right_drive=null;
 
     // Tentacle Motors
-    public DcMotor lower_arm;
-    public DcMotor upper_arm;
+    public DcMotor lower_arm=null;
+    public DcMotor upper_arm=null;
 
     // Claw Motors
-    public Servo left_claw;
-    public Servo right_claw;
+    public Servo left_claw=null;
+    public Servo right_claw=null;
 
     //Dropdown arm motor
-    public Servo color_sensing_arm;
+    public Servo color_sensing_arm=null;
 
     // Color Sensors
-    public LynxI2cColorRangeSensor color_sensor;
+    public LynxI2cColorRangeSensor color_sensor=null;
 
     // Constants
     public static final double CLAW_HOME=1;
@@ -98,7 +98,7 @@ public class KrakenBot {
     }
 
     // Initialize hardware
-    public void init(HardwareMap ahwMap) {
+    public void init(HardwareMap ahwMap, boolean teleop) {
         // save reference to HW Map
         hwMap = ahwMap;
 
@@ -123,7 +123,12 @@ public class KrakenBot {
         right_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lower_arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         upper_arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        if(teleop) {
+            left_drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            right_drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            lower_arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            upper_arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         lower_arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upper_arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 

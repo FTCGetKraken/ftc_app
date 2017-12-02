@@ -77,7 +77,7 @@ public class KrakenBot_TeleOp extends LinearOpMode {
             if(gamepad2.a) {
                 robot.color_sensing_arm.setPosition(0);
             }
-            lower_arm=-gamepad2.right_stick_y*4/MOTOR_REDUCTION;
+            lower_arm=-gamepad2.right_stick_y*8/MOTOR_REDUCTION;
 //                if (gamepad2.dpad_left) {
 //                    // Retract tentacle
 //                    lower_arm = -6/MOTOR_REDUCTION;
@@ -86,7 +86,7 @@ public class KrakenBot_TeleOp extends LinearOpMode {
 //                    // Extend tentacle
 //                    lower_arm = 4/MOTOR_REDUCTION;
 //                }
-            upper_arm=-gamepad2.left_stick_y/MOTOR_REDUCTION;
+            upper_arm=-gamepad2.left_stick_y*2/MOTOR_REDUCTION;
 //                if(gamepad2.dpad_up) {
 //                    // Raise tentacle
 //                    upper_arm = 1/MOTOR_REDUCTION;

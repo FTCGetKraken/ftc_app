@@ -126,8 +126,6 @@ public class KrakenBot {
         if(teleop) {
             left_drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             right_drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            lower_arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            upper_arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         lower_arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upper_arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.teamcode.KrakenOrientation;
+
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
@@ -7,6 +9,20 @@ import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.robotcore.external.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -16,22 +32,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class KrakenBot {
     // Drive Motors
-    public DcMotor left_drive;
-    public DcMotor right_drive;
+    public DcMotor left_drive=null;
+    public DcMotor right_drive=null;
 
     // Tentacle Motors
-    public DcMotor lower_arm;
-    public DcMotor upper_arm;
+    public DcMotor lower_arm=null;
+    public DcMotor upper_arm=null;
 
     // Claw Motors
-    public Servo left_claw;
-    public Servo right_claw;
+    public Servo left_claw=null;
+    public Servo right_claw=null;
 
     //Dropdown arm motor
-    public Servo color_sensing_arm;
+    public Servo color_sensing_arm=null;
 
     // Color Sensors
-    public LynxI2cColorRangeSensor color_sensor;
+    public LynxI2cColorRangeSensor color_sensor=null;
 
     // Constants
     public static final double CLAW_HOME=1;
@@ -69,15 +85,20 @@ public class KrakenBot {
     HardwareMap hwMap = null;
     private ElapsedTime period = new ElapsedTime();
     public ElapsedTime runtime = new ElapsedTime();
-    private Orientation o;
+    private KrakenOrientation or;
+
+    //Vuforia Consts
+    OpenGLMatrix lastLocation = null;
+    VuforiaLocalizer vuforia;
+    VuforiaTrackable relicTemplate;
 
     // Constructor
-    public KrakenBot(Orientation o) {
-        this.o=o;
+    public KrakenBot(KrakenOrientation or) {
+        this.or=or;
     }
 
     // Initialize hardware
-    public void init(HardwareMap ahwMap) {
+    public void init(HardwareMap ahwMap, boolean teleop) {
         // save reference to HW Map
         hwMap = ahwMap;
 
@@ -89,6 +110,7 @@ public class KrakenBot {
         color_sensor = hwMap.get(LynxI2cColorRangeSensor.class, "color");
         color_sensor.initialize();
         left_drive.setDirection(DcMotor.Direction.REVERSE);
+        //right_drive.setDirection(DcMotor.Direction.REVERSE);
 
         // Set all motors to zero power
         left_drive.setPower(0);
@@ -101,7 +123,10 @@ public class KrakenBot {
         right_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lower_arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         upper_arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        if(teleop) {
+            left_drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            right_drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         lower_arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upper_arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -112,6 +137,17 @@ public class KrakenBot {
         left_claw.setPosition(CLAW_HOME);
         right_claw.setPosition(INV_CLAW_HOME);
         color_sensing_arm.setPosition(0.0);
+
+        int cameraMonitorViewId = ahwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", ahwMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        parameters.vuforiaLicenseKey = "AWi6XSX/////AAAAGfYa/rsbWkMDgwcLYKs4GPc4Sj9hLnVJAAaD90oFNl37F5cIOnVvX+S1vQG3D0/a7Q0F/hKZ31HlSoPFEtUn7ZgBzvV/5wWliyP4B+itDY5MNtEjKy+V4Un4ZYu7090RxiKlN7P/n00jtIJu7ykS9nolwk+eV88BpwQpFHJuW5UxU+hzmxVAblMrttkz2q3fWS9bGoNEA1oe7b0omFU2+G2OrvQ6BNGJei8gaF1Tm0cAghpkxLuWbruIwgEx7wSNQhFDcEcEYvvn/9ePgRycgz3hJfcMNhm5tLVahJgnua32Oa2TXtKB0FHEDsLuf3I6WpD1XXO4BiqW4ECwTyKw3i+JgAvP1XINarydu7yBW9m3";
+
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        relicTemplate = relicTrackables.get(0);
     }
 
     public double servo_conv(double degrees){return degrees/180;}
@@ -125,7 +161,8 @@ public class KrakenBot {
     }
     
     public void autoWithJewels() {
-        if(!this.o.red) {
+        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+        if(!this.or.red) {
             turnDist = -turnDist;
             rightAngleDist = -rightAngleDist;
             horizSafeZoneDistance = -horizSafeZoneDistance;
@@ -139,7 +176,6 @@ public class KrakenBot {
         if(this.color_sensor.red()>20) {
             redOnLeft=true;
         }
-
         //if(this.o.red) {
         if(redOnLeft) {
             // Turn left
@@ -155,20 +191,6 @@ public class KrakenBot {
             // Turn back
             encoder_drive(turnPower,-turnDist,-turnDist,turnTimeout);
         }
-//        } else {
-//            if(redOnLeft) {
-//                // Turn right
-//                encoder_drive(turnPower,turnDist,turnDist,turnTimeout);
-//                // Turn back
-//                encoder_drive(turnPower,-turnDist,-turnDist,turnTimeout);
-//
-//            } else {
-//                // Turn left
-//                encoder_drive(turnPower,-turnDist,-turnDist,turnTimeout);
-//                // Turn back
-//                encoder_drive(turnPower,turnDist,turnDist,turnTimeout);
-//            }
-//        }
 
         //Move forward
         encoder_drive(horizSafeZonePower,horizSafeZoneDistance,horizSafeZoneDistance,horizSafeZoneTimeout);
@@ -179,8 +201,15 @@ public class KrakenBot {
         //Move forward
         encoder_drive(horizSafeZonePower,finalDist,finalDist,horizSafeZoneTimeout);
 
-        if(!this.o.red) {
+        if(!this.or.red) {
             encoder_drive(turnPower,finalDist,-finalDist,horizSafeZoneTimeout);
+        }
+
+        if(vuMark.equals(RelicRecoveryVuMark.LEFT)) {
+        } else if(vuMark.equals(RelicRecoveryVuMark.CENTER)) {
+            encoder_drive(turnPower,3,3,turnTimeout);
+        } else {
+            encoder_drive(turnPower,6,6,turnTimeout);
         }
 
         //Turn 90 degrees
@@ -255,6 +284,12 @@ public class KrakenBot {
         // onto the next step, use (isBusy() || isBusy()) in the loop test.
         while ((runtime.seconds() < timeoutS) &&
                 (this.left_drive.isBusy() || this.right_drive.isBusy())) {
+            // Display it for the driver.
+            // Display it for the driver.
+            System.out.println("Path1: Running to"+newLeftTarget+"|"+newRightTarget);
+            System.out.println("Path2: Running at"+
+                    this.left_drive.getCurrentPosition()+"|"+
+                    this.right_drive.getCurrentPosition());
         }
 
         // Stop all motion;
